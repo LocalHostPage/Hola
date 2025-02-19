@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Protegida</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .login {
+            text-align: center;
+        }
+        .container {
+            display: none;
+            text-align: center;
+            position: relative;
+        }
+        .vinyl {
+            width: 200px;
+            height: 200px;
+            background: url('vinilo.jpg') no-repeat center center/cover;
+            border-radius: 50%;
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 24px;
+            animation: float 5s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #ffcc00;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(255, 204, 0, 0.5);
+        }
+        .btn:hover {
+            background-color: #ffaa00;
+        }
+        .question {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login">
+        <h2>Responde y pasa</h2>
+        <div id="questionContainer">
+            <p id="questionText"></p>
+            <input type="text" id="answerInput" placeholder="Tu respuesta">
+            <button onclick="checkAnswer()">Responder</button>
+        </div>
+        <p id="revealedPassword">Contraseña: _ _ _ _ _</p>
+        <button id="unlockButton" style="display: none;" onclick="unlockPage()">Desbloquear</button>
+    </div>
+    <div class="container">
+        <center><div class="vinyl"></div></center>
+        <div class="audio-controls">
+            <button class="btn" onclick="playAudio()">▶️ Play</button>
+            <button class="btn" onclick="pauseAudio()">⏸️ Pause</button>
+            <button class="btn" onclick="toggleVinylSpin()">🔄 Toggle Spin</button>
+        </div>
+        <audio id="audio" src="audio.mp3"></audio>
+    </div>
+    <script>
+        const questions = [
+            { question: "¿Qué mes es tu cumpleaños?", answer: "julio" },
+            { question: "¿Edad?", answer: "12" },
+            { question: "¿Color fav? (O eso me  contaron)", answer: "rosado" },
+            { question: "¿Hermanos?", answer: "3" },
+            { question: "¿Día de tu cumpleaños?", answer: "11" }
+        ];
+        const correctPassword = "JUDIT";
+        let revealedPassword = ["_", "_", "_", "_", "_"];
+        let currentQuestionIndex = 0;
+        
+        function checkAnswer() {
+            const userAnswer = document.getElementById("answerInput").value.toLowerCase();
+            if (userAnswer === questions[currentQuestionIndex].answer) {
+                revealedPassword[currentQuestionIndex] = correctPassword[currentQuestionIndex];
+                document.getElementById("revealedPassword").innerText = "Contraseña: " + revealedPassword.join(" ");
+                currentQuestionIndex++;
+            }
+            if (currentQuestionIndex < questions.length) {
+                document.getElementById("questionText").innerText = questions[currentQuestionIndex].question;
+                document.getElementById("answerInput").value = "";
+            } else {
+                document.getElementById("questionContainer").style.display = "none";
+                document.getElementById("unlockButton").style.display = "block";
+            }
+        }
+        
+        document.getElementById("questionText").innerText = questions[currentQuestionIndex].question;
+        
+        function unlockPage() {
+            document.querySelector(".login").style.display = "none";
+            document.querySelector(".container").style.display = "block";
+            generateHearts();
+        }
+
+        function playAudio() {
+            document.getElementById("audio").play();
+        }
+
+        function pauseAudio() {
+            document.getElementById("audio").pause();
+        }
+
+        function toggleVinylSpin() {
+            let vinyl = document.querySelector(".vinyl");
+            if (vinyl.style.animationPlayState === "paused") {
+                vinyl.style.animationPlayState = "running";
+            } else {
+                vinyl.style.animationPlayState = "paused";
+            }
+        }
+
+        function generateHearts() {
+            setInterval(() => {
+                let heart = document.createElement("div");
+                heart.classList.add("heart");
+                heart.innerHTML = "❤️";
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.top = "100vh";
+                heart.style.fontSize = Math.random() * 20 + 20 + "px";
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
